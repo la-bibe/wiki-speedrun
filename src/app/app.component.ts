@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import {ApiService} from "./services/api.service";
+import {CrawlerService} from "./services/crawler.service";
 
 @Component({
   selector: 'app-root',
@@ -7,12 +8,16 @@ import {ApiService} from "./services/api.service";
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  constructor(private apiService: ApiService) {
+  from: string = 'Sattleria_sophiae';
+  to: string = 'Syrmadaula';
+
+  constructor(
+    private apiService: ApiService,
+    private crawlerService: CrawlerService
+  ) {
   }
 
   findLinks() {
-    this.apiService.fetchAllPageLinks('en', 'Albert Einstein', (links) => {
-      document.getElementsByClassName('logger').item(0).innerHTML = links.join('<br/>')
-    })
+    this.crawlerService.findPath('en', this.from, this.to).subscribe(console.debug)
   }
 }
