@@ -8,11 +8,15 @@ import {Observable} from "rxjs";
 })
 export class ApiService {
   maxRequestPageSize = 50
-  parallelRequests = 5
+  parallelRequests = 10
 
   constructor(
     private http: HttpClient
   ) {
+  }
+
+  cleanPageTitle(title) {
+    return title.replace(/ /g, '_')
   }
 
   fetchPageOfPageLinks(lang, title, continueValue = null) {
@@ -36,10 +40,11 @@ export class ApiService {
           Object.keys(pages).forEach(page => {
             if (pages[page].links) {
               pages[page].links.map(link => link.title).forEach(link => {
+                link = this.cleanPageTitle(link)
                 if (link === goal) {
                   continueFetching = false
                 }
-                subscriber.next({page: pages[page].title, link})
+                subscriber.next({page: this.cleanPageTitle(pages[page].title), link})
               })
             }
           })

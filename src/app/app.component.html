@@ -1,5 +1,13 @@
-<input type="text" [(ngModel)]="from"><br/>
-<input type="text" [(ngModel)]="to"><br/>
+<label for="lang">Language code:</label><br>
+<input name="lang" id="lang" type="text" [(ngModel)]="lang"><br>
+<br>
+<label for="lang">Starting page:</label><br>
+<input name="origin" id="origin" type="text" [(ngModel)]="from"><br>
+<br>
+<label for="lang">Goal page:</label><br>
+<input name="destination" id="destination" type="text" [(ngModel)]="to"><br>
+<br>
 <button (click)="findLinks()">Find links</button>
-<div class="logger">
+<br>
+<div id="logger">
 </div>

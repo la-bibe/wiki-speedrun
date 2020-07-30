@@ -10,6 +10,7 @@ import {CrawlerService} from "./services/crawler.service";
 export class AppComponent {
   from: string = 'Parks and Recreation';
   to: string = 'Armageddon (1998 film)';
+  lang: string = 'en';
 
   constructor(
     private apiService: ApiService,
@@ -18,6 +19,6 @@ export class AppComponent {
   }
 
   findLinks() {
-    this.crawlerService.findPath('en', this.from, this.to).subscribe(console.debug)
+    this.crawlerService.findPath(this.lang, this.from, this.to).subscribe(console.debug)
   }
 }

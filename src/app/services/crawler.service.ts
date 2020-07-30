@@ -15,11 +15,22 @@ export class CrawlerService {
     let knownLinks = {};
     let unexplored = [from];
 
+    from = this.apiService.cleanPageTitle(from)
+    to = this.apiService.cleanPageTitle(to)
+
+    const logger = document.getElementById('logger')
+
+    const log = text => {
+      const span = document.createElement('span')
+      span.innerHTML = text
+
+      logger.appendChild(span)
+    }
+
     const getFinalPath = () => {
       let path = []
       while (to !== from) {
         path.push(to)
-        // TODO Handle special characters (space = underscore)
         to = Object.keys(knownLinks).filter(parent => knownLinks[parent].includes(to))[0]
       }
       path.push(from)
@@ -50,7 +61,7 @@ export class CrawlerService {
       let found = false;
       const continueCrawling = () => {
         level += 1;
-        console.log("## BEGINNING CRAWLING LEVEL " + level + " ##")
+        log('Crawling level ' + level + ' links (' + unexplored.length + ') ...')
         const toVisit = unexplored;
         unexplored = [];
         crawlNextLevel(toVisit).subscribe(
@@ -59,8 +70,8 @@ export class CrawlerService {
             if (!found && newUnexplored.includes(to)) {
               found = true;
               subscriber.complete()
-              console.log("Found it ! Yeeey !")
-              console.log(getFinalPath())
+              log('Found a path !')
+              log(getFinalPath().join(' -> '))
             }
           },
           subscriber.error,
@@ -72,6 +83,7 @@ export class CrawlerService {
           }
         )
       }
+      log('Trying to find a path from ' + from + ' to ' + to)
       continueCrawling()
     })
   }
