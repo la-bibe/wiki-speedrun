@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {ApiService} from "./api.service";
-import {defer, from, Observable} from "rxjs";
-import {mergeAll} from "rxjs/operators";
+import {Observable} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -12,51 +11,38 @@ export class CrawlerService {
   ) {
   }
 
-  getPagesLinks(lang, pages) {
-    return from(pages.map(page => defer(() => {
-      return new Observable(subscriber => {
-        let links = [];
-        this.apiService.fetchAllPageLinks(lang, page).subscribe(
-          link => links.push(link),
-          subscriber.error,
-          () => {
-            subscriber.next({page, links})
-            subscriber.complete()
-          }
-        )
-      })
-    }))).pipe(mergeAll(5))
-  }
-
   findPath(lang, from, to) {
     let knownLinks = {};
     let unexplored = [from];
-
-    const getUnknownLinks = links => {
-      return links.filter(link => !Object.keys(knownLinks).includes(link))
-    }
-
-    const crawlNextLevel = toVisit => {
-      return new Observable<string>(subscriber => {
-        this.getPagesLinks(lang, toVisit).subscribe(
-          ({page, links}) => {
-            knownLinks[page] = links
-            getUnknownLinks(links).forEach(link => subscriber.next(link))
-          },
-          subscriber.error,
-          () => subscriber.complete()
-        )
-      })
-    }
 
     const getFinalPath = () => {
       let path = []
       while (to !== from) {
         path.push(to)
+        // TODO Handle special characters (space = underscore)
         to = Object.keys(knownLinks).filter(parent => knownLinks[parent].includes(to))[0]
       }
       path.push(from)
       return path.reverse()
+    }
+
+    const crawlNextLevel = toVisit => {
+      return new Observable<string>(subscriber => {
+        this.apiService.fetchAllPagesLinks(lang, toVisit, to).subscribe(
+          ({page, link}) => {
+            if (!Object.keys(knownLinks).includes(page)) {
+              knownLinks[page] = [link]
+            } else {
+              knownLinks[page].push(link)
+            }
+            if (!Object.keys(knownLinks).includes(link)) {
+              subscriber.next(link)
+            }
+          },
+          subscriber.error,
+          () => subscriber.complete()
+        )
+      })
     }
 
     return new Observable(subscriber => {
@@ -69,14 +55,13 @@ export class CrawlerService {
         unexplored = [];
         crawlNextLevel(toVisit).subscribe(
           newUnexplored => {
+            unexplored.push(newUnexplored)
             if (!found && newUnexplored.includes(to)) {
-              // TODO Find a way to stop crawling toVisit after found
               found = true;
               subscriber.complete()
               console.log("Found it ! Yeeey !")
               console.log(getFinalPath())
             }
-            unexplored.push(newUnexplored)
           },
           subscriber.error,
           () => {

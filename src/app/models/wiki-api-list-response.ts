@@ -5,6 +5,7 @@ export interface WikiApiListResponse {
   query: {
     pages: {
       [pageId: string]: {
+        title: string,
         links: [{
           title: string;
         }]

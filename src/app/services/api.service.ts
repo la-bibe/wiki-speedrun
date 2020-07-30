@@ -7,6 +7,9 @@ import {Observable} from "rxjs";
   providedIn: 'root'
 })
 export class ApiService {
+  maxRequestPageSize = 50
+  parallelRequests = 5
+
   constructor(
     private http: HttpClient
   ) {
@@ -15,30 +18,58 @@ export class ApiService {
   fetchPageOfPageLinks(lang, title, continueValue = null) {
     let url = 'https://' + lang + '.wikipedia.org/w/api.php?';
     url += 'prop=links&format=json&pllimit=500&action=query&origin=*&';
-    url += 'titles=' + title; // TODO Use multiple titles to search faster
+    url += 'titles=' + title;
     if (continueValue) {
       url += '&plcontinue=' + continueValue;
     }
     return this.http.get<WikiApiListResponse>(url);
   }
 
-  fetchAllPageLinks(lang, title) {
-    return new Observable<string>(subscriber => {
-      const fetchNextPageLinks = (continueValue = null) => {
-        this.fetchPageOfPageLinks(lang, title, continueValue).subscribe(response => {
+  fetchAllPagesLinks(lang, pages, goal = null) {
+    return new Observable<{ page: string, link: string }>(subscriber => {
+      let continueFetching = true
+      let parallelsDone = 0
+
+      const fetchNextPageLinks = (pagesToFetch, completionCallback, continueValue = null) => {
+        this.fetchPageOfPageLinks(lang, pagesToFetch.join('|'), continueValue).subscribe(response => {
           const pages = response.query.pages;
-          if (pages[Object.keys(pages)[0]].links) {
-            pages[Object.keys(pages)[0]].links.map(link => link.title).forEach(link => subscriber.next(link))
-          }
-          if (response.continue) {
-            fetchNextPageLinks(response.continue.plcontinue)
+          Object.keys(pages).forEach(page => {
+            if (pages[page].links) {
+              pages[page].links.map(link => link.title).forEach(link => {
+                if (link === goal) {
+                  continueFetching = false
+                }
+                subscriber.next({page: pages[page].title, link})
+              })
+            }
+          })
+          if (continueFetching && response.continue) {
+            fetchNextPageLinks(pagesToFetch, completionCallback, response.continue.plcontinue)
           } else {
-            subscriber.complete();
+            completionCallback()
           }
         })
       }
 
-      fetchNextPageLinks()
+      const fetchNextRangeOfPagesParallelInstance = offset => {
+        if (!continueFetching || offset >= pages.length) {
+          parallelsDone += 1
+          if (parallelsDone === this.parallelRequests) {
+            subscriber.complete()
+          }
+        } else {
+          const increment = this.maxRequestPageSize * this.parallelRequests
+
+          fetchNextPageLinks(pages.slice(offset, offset + this.maxRequestPageSize), () => {
+            offset += increment
+            fetchNextRangeOfPagesParallelInstance(offset)
+          })
+        }
+      }
+
+      for (let i = 0; i < this.parallelRequests; i += 1) {
+        fetchNextRangeOfPagesParallelInstance(i * this.maxRequestPageSize)
+      }
     })
   }
 }

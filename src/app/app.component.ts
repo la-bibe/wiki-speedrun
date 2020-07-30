@@ -8,8 +8,8 @@ import {CrawlerService} from "./services/crawler.service";
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  from: string = 'Sattleria_sophiae';
-  to: string = 'Syrmadaula';
+  from: string = 'Parks and Recreation';
+  to: string = 'Armageddon (1998 film)';
 
   constructor(
     private apiService: ApiService,
