@@ -1,12 +1,136 @@
-#logger {
+.container {
+  width: 100%;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+}
+
+.app {
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
-  background-color: #333;
-  border-radius: .3rem;
+  align-items: stretch;
+  max-width: min(100%, 600px);
+}
+
+h1 {
+  margin-left: 2rem;
+  margin-top: 3rem;
+  text-decoration: underline;
+}
+
+.search-config-form {
+  padding: 1rem;
+}
+
+.search-config-form div {
+  display: flex;
+  flex-direction: column;
+}
+
+input, button {
+  font-family: 'Roboto', sans-serif;
+  font-size: 1rem;
   padding: .5rem 1rem;
+  border-radius: 1.5rem;
+}
+
+input {
+  color: white;
+  font-weight: lighter;
+  background: transparent;
+  border: 2px solid white;
+  transition: box-shadow 0.20s ease-in-out;
+}
+
+input:focus {
+  outline: none;
+  border-color: #51CBEE;
+  box-shadow: 0 0 5px white;
+}
+
+button {
+  color: #333;
+  background: white;
+  border: none;
+  margin-top: 1rem;
+}
+
+button:hover {
+  cursor: pointer;
+  background: #EEE;
+}
+
+button:focus {
+  outline: none;
+}
+
+label {
+  text-transform: uppercase;
+  font-weight: bold;
+  margin: .5rem;
+}
+
+.logger-container {
+  background-color: #333;
   margin: 1rem;
+  border-radius: .3rem;
+  overflow: hidden;
+}
+
+.logger-title {
+  display: block;
+  padding: .5rem;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.logger {
+  display: flex;
+  flex-direction: column;
+  margin: .5rem 1rem;
   font-family: monospace;
   color: #EEE;
   font-size: 1rem;
   line-height: 1.2rem;
+  overflow: auto;
+  -ms-overflow-style: none;
+  scrollbar-height: none;
+}
+
+.logger::-webkit-scrollbar {
+  display: none;
+}
+
+.logger span {
+  white-space: nowrap;
+  width: fit-content;
+  font-size: .8rem;
+}
+
+.logger-actions {
+  padding: .5rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.logger-actions span {
+  cursor: pointer;
+  font-size: .8rem;
+}
+
+.logger-actions span:hover {
+  text-decoration: underline;
+}
+
+.footer {
+  margin-top: 5rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  font-weight: lighter;
+}
+
+.footer a {
+  color: white;
 }

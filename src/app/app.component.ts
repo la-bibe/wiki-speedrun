@@ -11,6 +11,7 @@ export class AppComponent {
   from: string = 'Parks and Recreation';
   to: string = 'Armageddon (1998 film)';
   lang: string = 'en';
+  logHistory: string[] = [];
 
   constructor(
     private apiService: ApiService,
@@ -18,7 +19,18 @@ export class AppComponent {
   ) {
   }
 
+  log(logEntry: string) {
+    this.logHistory.push('$ ' + logEntry)
+  }
+
+  clearLogs() {
+    this.logHistory = []
+  }
+
   findLinks() {
-    this.crawlerService.findPath(this.lang, this.from, this.to).subscribe(console.debug)
+    this.crawlerService.findPath(
+      this.lang, this.from, this.to,
+      logEntry => this.log(logEntry)
+    ).subscribe(console.debug)
   }
 }

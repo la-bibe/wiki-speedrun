@@ -11,21 +11,14 @@ export class CrawlerService {
   ) {
   }
 
-  findPath(lang, from, to) {
+  findPath(lang, from, to, log) {
     let knownLinks = {};
     let unexplored = [from];
 
     from = this.apiService.cleanPageTitle(from)
     to = this.apiService.cleanPageTitle(to)
 
-    const logger = document.getElementById('logger')
-
-    const log = text => {
-      const span = document.createElement('span')
-      span.innerHTML = text
-
-      logger.appendChild(span)
-    }
+    const logger = document.getElementsByClassName('logger')[0]
 
     const getFinalPath = () => {
       let path = []

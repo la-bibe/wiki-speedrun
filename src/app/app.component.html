@@ -1,13 +1,34 @@
-<label for="lang">Language code:</label><br>
-<input name="lang" id="lang" type="text" [(ngModel)]="lang"><br>
-<br>
-<label for="lang">Starting page:</label><br>
-<input name="origin" id="origin" type="text" [(ngModel)]="from"><br>
-<br>
-<label for="lang">Goal page:</label><br>
-<input name="destination" id="destination" type="text" [(ngModel)]="to"><br>
-<br>
-<button (click)="findLinks()">Find links</button>
-<br>
-<div id="logger">
+<div class="container">
+    <div class="app">
+        <h1>WikiSpeedrun</h1>
+        <form class="search-config-form">
+            <div>
+                <label for="lang">Language code</label>
+                <input name="lang" id="lang" type="text" [(ngModel)]="lang"><br>
+            </div>
+            <div>
+                <label for="lang">Starting page</label>
+                <input name="origin" id="origin" type="text" [(ngModel)]="from"><br>
+            </div>
+            <div>
+                <label for="lang">Goal page</label>
+                <input name="destination" id="destination" type="text" [(ngModel)]="to"><br>
+            </div>
+            <div>
+                <button (click)="findLinks()">Find links</button>
+            </div>
+        </form>
+        <div class="logger-container">
+            <span class="logger-title">Logger</span>
+            <div class="logger">
+                <span *ngFor="let log of logHistory">{{log}}</span>
+            </div>
+            <div class="logger-actions">
+                <span (click)="clearLogs()">Clear logs</span>
+            </div>
+        </div>
+        <div class="footer">
+            © 2020 Fantin Bibas - <a href="https://github.com/FantinBibas" target="_blank">Github</a>
+        </div>
+    </div>
 </div>
