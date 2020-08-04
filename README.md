@@ -1,7 +1,11 @@
 # WikiSpeedrun
 
 Tries to find the shortest link path from a Wikipedia article to another. Heavily inspired by [wikhitler](https://github.com/zyurs/wikhitler).
-This project uses the Wikipedia api instead of requesting the full content of the crowled pages.
+This project uses the Wikipedia API instead of requesting the full content of the crowled pages.
+
+Wikipedia API documentation used: [https://www.mediawiki.org/wiki/API:Links#API_documentation](https://www.mediawiki.org/wiki/API:Links#API_documentation)
+
+# Angular
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.3.28.
 
