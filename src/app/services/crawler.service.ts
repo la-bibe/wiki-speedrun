@@ -53,11 +53,13 @@ export class CrawlerService {
       const continueCrawling = () => {
         level += 1;
         log('Crawling level ' + level + ' links (' + unexplored.length + ') ...')
+        setFetchedOutput(0)
         const toVisit = unexplored;
         if (toVisit.length === 0) {
           log('Path not found :(')
           setUnexploredOutput(0)
           setFetchingOutput(0)
+          setFetchedOutput(0)
           return
         }
         unexplored = [];
@@ -73,6 +75,7 @@ export class CrawlerService {
               subscriber.complete()
               setUnexploredOutput(0)
               setFetchingOutput(0)
+              setFetchedOutput(0)
               log('Found a path !')
               log(getFinalPath().join(' -> '))
             }
