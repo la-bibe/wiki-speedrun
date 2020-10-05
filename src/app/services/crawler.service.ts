@@ -54,6 +54,12 @@ export class CrawlerService {
         level += 1;
         log('Crawling level ' + level + ' links (' + unexplored.length + ') ...')
         const toVisit = unexplored;
+        if (toVisit.length === 0) {
+          log('Path not found :(')
+          setUnexploredOutput(0)
+          setFetchingOutput(0)
+          return
+        }
         unexplored = [];
         setFetchingOutput(toVisit.length)
         crawlNextLevel(toVisit).subscribe(
