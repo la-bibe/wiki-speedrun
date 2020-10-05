@@ -29,10 +29,11 @@ export class ApiService {
     return this.http.get<WikiApiListResponse>(url);
   }
 
-  fetchAllPagesLinks(lang, pages, goal = null) {
+  fetchAllPagesLinks(lang, pages, goal = null, setFetchedOutput) {
     return new Observable<{ page: string, link: string }>(subscriber => {
       let continueFetching = true
       let parallelsDone = 0
+      let fetched = 0
 
       const fetchNextPageLinks = (pagesToFetch, completionCallback, continueValue = null) => {
         this.fetchPageOfPageLinks(lang, pagesToFetch.join('|'), continueValue).subscribe(response => {
@@ -65,8 +66,11 @@ export class ApiService {
         } else {
           const increment = this.maxRequestPageSize * this.parallelRequests
 
-          fetchNextPageLinks(pages.slice(offset, offset + this.maxRequestPageSize), () => {
+          const subPages = pages.slice(offset, offset + this.maxRequestPageSize)
+          fetchNextPageLinks(subPages, () => {
             offset += increment
+            fetched += subPages.length
+            setFetchedOutput(fetched)
             fetchNextRangeOfPagesParallelInstance(offset)
           })
         }

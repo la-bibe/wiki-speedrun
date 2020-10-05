@@ -11,14 +11,12 @@ export class CrawlerService {
   ) {
   }
 
-  findPath(lang, from, to, log) {
+  findPath(lang, from, to, log, setUnexploredOutput, setFetchingOutput, setFetchedOutput) {
     let knownLinks = {};
     let unexplored = [from];
 
     from = this.apiService.cleanPageTitle(from)
     to = this.apiService.cleanPageTitle(to)
-
-    const logger = document.getElementsByClassName('logger')[0]
 
     const getFinalPath = () => {
       let path = []
@@ -32,7 +30,7 @@ export class CrawlerService {
 
     const crawlNextLevel = toVisit => {
       return new Observable<string>(subscriber => {
-        this.apiService.fetchAllPagesLinks(lang, toVisit, to).subscribe(
+        this.apiService.fetchAllPagesLinks(lang, toVisit, to, setFetchedOutput).subscribe(
           ({page, link}) => {
             if (!Object.keys(knownLinks).includes(page)) {
               knownLinks[page] = [link]
@@ -57,12 +55,18 @@ export class CrawlerService {
         log('Crawling level ' + level + ' links (' + unexplored.length + ') ...')
         const toVisit = unexplored;
         unexplored = [];
+        setFetchingOutput(toVisit.length)
         crawlNextLevel(toVisit).subscribe(
           newUnexplored => {
+            if (found)
+              return
             unexplored.push(newUnexplored)
+            setUnexploredOutput(unexplored.length)
             if (!found && newUnexplored.includes(to)) {
               found = true;
               subscriber.complete()
+              setUnexploredOutput(0)
+              setFetchingOutput(0)
               log('Found a path !')
               log(getFinalPath().join(' -> '))
             }

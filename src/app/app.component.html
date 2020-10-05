@@ -22,6 +22,8 @@
             <span class="logger-title">Logger</span>
             <div class="logger">
                 <span *ngFor="let log of logHistory">{{log}}</span>
+                <span *ngIf="fetching > 0">Crawled {{fetched}} page{{fetched !== 1 ? 's' : ''}} of {{fetching}} for this level</span>
+                <span *ngIf="unexplored > 0">Found {{unexplored}} next level link{{unexplored !== 1 ? 's' : ''}}</span>
             </div>
             <div class="logger-actions">
                 <span (click)="clearLogs()">Clear logs</span>
